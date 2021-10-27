@@ -2,12 +2,15 @@
 """some helper functions for project 1."""
 import csv
 import numpy as np
+import zipfile
 
 
 def load_csv_data(data_path, sub_sample=False):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
-    y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)
-    x = np.genfromtxt(data_path, delimiter=",", skip_header=1)
+    with zipfile.ZipFile(data_path) as ar, ar.open(ar.infolist()[0]) as f:
+        y = np.genfromtxt(f, delimiter=",", skip_header=1, dtype=str, usecols=1)
+        with ar.open(ar.infolist()[0]) as f: # Zip entries do not support rewind
+            x = np.genfromtxt(f, delimiter=",", skip_header=1)
     ids = x[:, 0].astype(np.int)
     input_data = x[:, 2:]
 
