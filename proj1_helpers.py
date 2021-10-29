@@ -26,6 +26,27 @@ def load_csv_data(data_path, sub_sample=False):
 
     return yb, input_data, ids
 
+def load_csv_data_2(data_path, sub_sample=False):
+    """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
+    with zipfile.ZipFile(data_path) as ar, ar.open(ar.infolist()[0]) as f:
+        y = np.genfromtxt(f, delimiter=",", skip_header=1, dtype=str, usecols=1)
+        with ar.open(ar.infolist()[0]) as f: # Zip entries do not support rewind
+            x = np.genfromtxt(f, delimiter=",", skip_header=1)
+    ids = x[:, 0].astype(np.int)
+    input_data = x[:, 13:]
+
+    # convert class labels from strings to binary (-1,1)
+    yb = np.ones(len(y))
+    yb[np.where(y=='b')] = -1
+    
+    # sub-sample
+    if sub_sample:
+        yb = yb[::50]
+        input_data = input_data[::50]
+        ids = ids[::50]
+
+    return input_data
+
 
 def predict_labels(weights, data):
     """Generates class predictions given weights, and a test data matrix"""
