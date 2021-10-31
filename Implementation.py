@@ -68,19 +68,27 @@ def sigmoid(t):
 
 def calculate_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
-    pred = sigmoid(tx.dot(w))
-    loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
+    y_pred = sigmoid(tx.dot(w))
+    loss = 0
+    loss = y.T.dot(np.log(y_pred)) + (1 - y).T.dot(np.log(1 - y_pred))
+    
+    #for x_i, y_i in zip(tx, y):
+     #   xw = x_i @ w
+      #  l = np.log(1 + np.exp(xw))
+       # loss += (l - y_i * xw)
+    
     #print(loss)
     return np.squeeze(-loss)
+    
 
 def calculate_gradient(y, tx, w):
     """compute the gradient of loss."""
  
-    pred = sigmoid(tx.dot(w))
+    y_pred = sigmoid(tx.dot(w))
     
     #print(pred)
     
-    grad = tx.T.dot(pred - y)
+    grad = tx.T.dot(y_pred - y)
     #print('le gradient')
     
     return grad
@@ -93,8 +101,9 @@ def learning_by_gd(y, tx, w, gamma):
     """
     loss = calculate_loss(y, tx, w)
     grad = calculate_gradient(y, tx, w)
+    #print(grad)
     w -= gamma * grad
-    return loss, w, grad
+    return loss, w
 #-----------------------------------------
 #helpers function for penalized logistic regression
 #-----------------------------------------
@@ -158,9 +167,12 @@ def logistic_regression_gd(y, tx, initial_w, max_iter, gamma):
     # start the logistic regression
     for iter in range(max_iter):
         # get loss and update w.
-        loss, w, gradient = learning_by_gd(y, tx, w, gamma)
+        loss, w = learning_by_gd(y, tx, w, gamma)
         
-        gamma = update_gamma(gamma,loss)
+        #gamma = update_gamma(gamma,loss)
+        
+        if iter > 100:
+            gamma = 0.00001
         
         # info
         if iter % 100 == 0:
