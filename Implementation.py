@@ -29,7 +29,7 @@ def polynomial_regression(x):
         tx = build_poly(x, degree)
         
         # least squares
-        weights = least_squares(y, tx)
+        weight = least_squares(y, tx)
         
         # compute RMSE
         rmse = np.sqrt(2 * compute_mse(y, tx, weights))
@@ -37,7 +37,7 @@ def polynomial_regression(x):
               i=ind + 1, d=degree, loss=rmse))
        
         
-    return weights
+    return weight
 
 #-----------------------------------------
 #logistic regretion helper
@@ -75,8 +75,10 @@ def calculate_loss(y, tx, w):
 
 def calculate_gradient(y, tx, w):
     """compute the gradient of loss."""
-    
+ 
     pred = sigmoid(tx.dot(w))
+    
+    #print(pred)
     
     grad = tx.T.dot(pred - y)
     #print('le gradient')
@@ -96,16 +98,6 @@ def learning_by_gd(y, tx, w, gamma):
 #-----------------------------------------
 #helpers function for penalized logistic regression
 #-----------------------------------------
-#def penalized_lr(y, tx, w, lambda_):
-   # """return the loss and gradient."""
-    
-    #num_samples = y.shape[0]
-    #loss = calculate_loss(y, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
-   # print(lambda_)
-   # print(loss)
-    #gradient = calculate_gradient(y, tx, w) + 2 * lambda_ * w
-    
-   # return loss, gradient
 
 def learning_by_penalized_gd(y, tx, w, gamma, lambda_):
     """
@@ -119,6 +111,8 @@ def learning_by_penalized_gd(y, tx, w, gamma, lambda_):
     w -= gamma * gradient
     
     return loss, w, gradient
+
+
 
 #-----------------------------------------
 #least squares GD(y, tx, initial w,max iters, gamma)
@@ -168,9 +162,9 @@ def logistic_regression_gd(y, tx, initial_w, max_iter, gamma):
         
         gamma = update_gamma(gamma,loss)
         
-        # log info
+        # info
         if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}, gamma={g}, gradient = {gr}".format(i=iter, l=loss, g=gamma, gr= gradient))
+            print("Current iteration={i}, loss={l}, gamma={g}".format(i=iter, l=loss, g=gamma))
             
         # converge criterion
         losses.append(loss)
@@ -201,9 +195,12 @@ def regu_logistic_regression_gd(y, tx, lambda_, initial_w, max_iter, gamma ):
     for iter in range(max_iter):
         # get loss and update w.
         loss, w, gradient = learning_by_penalized_gd(y, tx, w, gamma, lambda_)
-        # log info
+        
+        gamma = update_gamma(gamma,loss)
+        
+        # info
         if iter % 100 == 0:
-            print("Current iteration={i}, loss={l}, gradient = {gr}".format(i=iter, l=loss, gr=gradient))
+            print("Current iteration={i}, loss={l}".format(i=iter, l=loss))
         # converge criterion
         losses_rlr.append(loss)
         if len(losses_rlr) > 1 and np.abs(losses_rlr[-1] - losses_rlr[-2]) < threshold:
