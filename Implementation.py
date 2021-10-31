@@ -49,7 +49,7 @@ def update_gamma(gamma,loss):
         if(loss < 7000):
             gamma = 0.0000000005
             if(loss < 1000):
-                gamma = 0.0000000001
+                gamma = 0.0000000003
                 if(loss < 100):
                     gamma = 0.00000000001
                     if(loss < 40):
