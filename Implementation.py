@@ -63,7 +63,10 @@ def update_gamma(gamma,loss):
 
 def sigmoid(t):
     """apply sigmoid function on t."""
-    return 1.0 / (1 + np.exp(-t))
+    #return 1.0 / (1 + np.exp(-t))
+    return np.exp(-np.logaddexp(0, -t))
+
+    
     
 
 def calculate_loss(y, tx, w):
@@ -93,6 +96,12 @@ def calculate_gradient(y, tx, w):
     
     return grad
 
+def compute_stoch_gradient(y, tx, w):
+    """Compute a stochastic gradient from just few examples n and their corresponding y_n labels."""
+    err = y - tx.dot(w)
+    grad = -tx.T.dot(err) / len(err)
+    return grad
+
 
 def learning_by_gd(y, tx, w, gamma):
     """
@@ -100,7 +109,8 @@ def learning_by_gd(y, tx, w, gamma):
     Return the loss and the updated w.
     """
     loss = calculate_loss(y, tx, w)
-    grad = calculate_gradient(y, tx, w)
+    #grad = calculate_gradient(y, tx, w)
+    grad = compute_stoch_gradient(y, tx, w)
     #print(grad)
     w -= gamma * grad
     return loss, w
@@ -171,8 +181,7 @@ def logistic_regression_gd(y, tx, initial_w, max_iter, gamma):
         
         #gamma = update_gamma(gamma,loss)
         
-        if iter > 100:
-            gamma = 0.00001
+        
         
         # info
         if iter % 100 == 0:
