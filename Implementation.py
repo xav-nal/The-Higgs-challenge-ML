@@ -6,6 +6,7 @@ import numpy as np
 
 def build_poly(x, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    #print(np.shape(x))
     poly = np.ones((len(x), 1))
     for deg in range(1, degree+1):
         poly = np.c_[poly, np.power(x, deg)]
@@ -13,6 +14,7 @@ def build_poly(x, degree):
 
 def compute_mse(y, tx, w):
     """compute the loss by mse."""
+           
     e = y - tx.dot(w)
     mse = e.dot(e) / (2 * len(e))
     return mse
@@ -37,6 +39,56 @@ def polynomial_regression(x):
               i=ind + 1, d=degree, loss=rmse))
        
         
+    return weight
+#-----------------------------------------
+#split Log Reg
+#-----------------------------------------
+def split_data(x, y, ratio, seed=1):
+    """split the dataset based on the split ratio."""
+    # set seed
+    np.random.seed(seed)
+    # generate random indices
+    num_row = len(y)
+    indices = np.random.permutation(num_row)
+    index_split = int(np.floor(ratio * num_row))
+    index_tr = indices[: index_split]
+    index_te = indices[index_split:]
+    # create split
+    x_tr = x[index_tr]
+    x_te = x[index_te]
+    y_tr = y[index_tr]
+    y_te = y[index_te]
+    
+    return x_tr, x_te, y_tr, y_te
+
+def train_test_split_demo_lr(x, y, ratio, seed):
+    """polynomial regression with different split ratios and different degrees."""
+    x_tr, x_te, y_tr, y_te = split_data(x, y, ratio, seed)
+    
+    # form tx 
+    tx_tr =x_tr
+    tx_te = x_te
+    
+    # init parameters
+    max_iter = 1000
+    gamma = 0.00000009
+    initial_w = np.zeros((tx_tr.shape[1], 1))
+    
+    print(np.shape(y_tr))
+    print(np.shape(tx_tr))
+    print(np.shape(initial_w))
+    
+    weight = logistic_regression_gd(y_tr, tx_tr, initial_w, max_iter, gamma)
+    
+    y_tr = np.expand_dims(y_tr, axis=1)
+    y_te = np.expand_dims(y_te, axis=1)
+    
+    #calculate cost for train and test data
+    cost_tr = calculate_loss(y_tr, tx_tr, weight)
+    cost_te = calculate_loss(y_te, tx_te, weight)
+
+    print("proportion={p}, logistic reg, Training loss={tr:.3f}, Testing loss={te:.3f}".format(
+          p=ratio, tr=cost_tr, te=cost_te))
     return weight
 
 #-----------------------------------------
@@ -96,6 +148,14 @@ def calculate_gradient(y, tx, w):
     
     return grad
 
+def compute_gradient_LR(y, tx, w):
+    """Compute the gradient."""
+    err = y - tx.dot(w)
+    
+    grad = -tx.T.dot(err) / len(err)
+    #print(err.shape, grad.shape, y.shape, tx.shape, w.shape)
+    return grad, err
+
 def compute_stoch_gradient(y, tx, w):
     """Compute a stochastic gradient from just few examples n and their corresponding y_n labels."""
     err = y - tx.dot(w)
@@ -137,11 +197,41 @@ def learning_by_penalized_gd(y, tx, w, gamma, lambda_):
 #least squares GD(y, tx, initial w,max iters, gamma)
 #Linear regression using gradient descent
 #-----------------------------------------
-
+def least_squares_GD(y, tx, initial_w, max_iters, gamma):
+    """ Gradient descent algorithm  """
+    loss = 0
+    
+    # start the linear regression
+    for iter in range(max_iter):
+        gradient, err = compute_gradient_LR(y, tx, w)
+        
+        loss = compute_mse(y, tx, w)
+        
+        #update weights
+        w -= gamma*gradient
+        
+    
+    return w,loss
+    
 #-----------------------------------------
 #least squares SGD(y, tx, initial w,max iters, gamma)
 #Linear regression using stochastic gradient descent
 #-----------------------------------------
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
+    """ Stochastic gradient descent algorithm  """
+    loss = 0
+    
+    # start the linear regression
+    for iter in range(max_iter):
+        gradient, err = compute_stoch_gradient(y, tx, w)
+        
+        loss = compute_mse(y, tx, w)
+        
+        #update weights
+        w -= gamma*gradient
+        
+    
+    return w,loss
 
 #-----------------------------------------
 #least squares(y, tx)
@@ -152,13 +242,32 @@ def least_squares(y, tx):
     """calculate the least squares solution."""
     a = tx.T.dot(tx)
     b = tx.T.dot(y)  
-    return np.linalg.solve(a, b)
+    w_sol = np.linalg.solve(a, b)
+    
+    loss = compute_mse(y, tx, w_sol)
+    
+    return w_sol,loss
 
 #-----------------------------------------
 #ridge regression(y, tx, lambda )
 #Ridge regression using normal equations
 #-----------------------------------------
-
+def ridge_regression(y, tx, lambda_):
+    """implement ridge regression."""
+    n = tx.shape[0]
+    #compute lambda prime
+    lambda_prime = 2 * n * lambda_
+    
+    #normal equation aw = b
+    a = tx.T.dot(tx) + lambda_prime* np.identity(tx.shape[1])
+    b = tx.T.dot(y)
+    
+    weight = np.linalg.solve(a, b)
+    
+    loss_rmse = np.sqrt(2 * compute_mse(y, tx, weight))
+    
+    return weight, loss_rmse  
+    
 #-----------------------------------------
 #logistic regression(y, tx, initial w,max iters, gamma)
 #Logistic regression using gradient descent or SGD
@@ -195,7 +304,7 @@ def logistic_regression_gd(y, tx, initial_w, max_iter, gamma):
     #print final loss
     print("loss={l}".format(l=calculate_loss(y, tx, w))) 
     
-    return w
+    return w, loss
 
 #-----------------------------------------
 #reg logistic regression(y, tx, lambda ,initial w, max iters, gamma)
@@ -229,5 +338,5 @@ def regu_logistic_regression_gd(y, tx, lambda_, initial_w, max_iter, gamma ):
     
     print("loss={l}".format(l=calculate_loss(y, tx, w)))
     
-    return w
+    return w, loss
 #-----------------------------------------
