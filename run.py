@@ -12,7 +12,7 @@ y, tX, ids = load_csv_data(DATA_TRAIN_PATH)
 ### Data cleaning and normalisation
 
 # we know that very low values are used to signal unavailable data
-tX[tX < -900] = np.nan
+tX[tX <= -999] = np.nan
 
 # split feature 22 by value as planned
 tX = np.hstack((np.delete(tX, 22,axis=1), np.stack([tX[:,22] == 0, tX[:,22] == 1, tX[:,22] == 2, tX[:,22] == 3]).T))
@@ -79,7 +79,7 @@ y, tX_test, ids_test = load_csv_data(DATA_TEST_PATH)
 
 ## we apply the same normalisation to the test data than we did training
 # treat NaNs
-tX_test[tX_test < -900] = np.nan
+tX_test[tX_test <= -999] = np.nan
 # split feature 22 by value as planned
 tX_test = np.hstack((np.delete(tX_test, 22,axis=1), np.stack([tX_test[:,22] == 0, tX_test[:,22] == 1, tX_test[:,22] == 2, tX_test[:,22] == 3]).T))
 # normalise
