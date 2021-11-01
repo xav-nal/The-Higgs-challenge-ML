@@ -43,11 +43,17 @@ Our overall insight is that both classes have distinct but overlapping distribut
 We add a feature of constant nonzero value to create a homogenous coordinate systems that allows perceptron-based algorithm to avoid sticking to the center of the coordinate system.
 
 As mentioned before, we remove the 22nd feature, and add 4 boolean features that encode each of its discrete values.
+
 \section{Algorithm selection}
 We explored two algorithms: logistic regression, and ridge regression with polynomial feature extension. We split our training dataset into a test dataset proper (80\%) and validation dataset (20\%) to tune hyperparameters.
+
 \section{Results}
-Our best performing algorithm both on the validation dataset and in the competition was ridge regression with $lambda = 10^{-4}$ and polynomial expansion up to degree 7.
+Our best performing algorithm both on the validation dataset and in the competition was ridge regression with $\lambda = 10^{-4}$ and polynomial expansion up to degree 7. It achieved 80.6\% categorical accuracy on the test regression. Logistic regression achieved at most 68\%, which is only slightly better that the accuracy of the default submission which puts every test datapoint in the same category. (65.8\%)
+
+We can also confirm that, within the selected ridge regression algorithm, our feature processing decisions both improve accuracy on the validation dataset. Together, they give a 30\% improvement. Our treatment of not-a-number values also helps by 1\%.
+
 \section{Conclusion}
+Overall, we find that perceptron-based machine learning algorithm are able, given the appropriate guidance, to recognize patterns in the data we were given and apply those to new data accurately. We also find that polynomial feature expansion can enable them to operate on non linearly separable data as well. We were not able however, to make good use of the logistic regression method. It is possible that this is due to a coding error on our part. Our results might be further improved by combining logistic regression or regularized logistic regression with polynomial feature expansion. Other methods, such as adaptative boosting, decision trees, or multi-layer perceptrons, migh also yield different and interesting results.
 
 \begin{figure}
 	\includegraphics[width=\columnwidth]{f1-f20.png}
