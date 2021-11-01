@@ -32,36 +32,6 @@ outliers_mask = np.linalg.norm(norm_tX, ord=np.inf, axis=1) > 4
 norm_tX = np.delete(norm_tX, outliers_mask, axis=0)
 y = np.delete(y, outliers_mask, axis=0)
 
-# and normalise labels to 0 or 1
-y[y==-1] = 0
-
-### Logistic Regression
-from Implementation import logistic_regression_gd
-
-# init parameters
-max_iter = 1500
-gamma = 0.00001
-norm_tX = np.c_[np.ones((y.shape[0], 1)), norm_tX]
-initial_w = np.zeros((norm_tX.shape[1], 1))
-
-weights, loss_lr = logistic_regression_gd(y, norm_tX, initial_w, max_iter, gamma)
-
-### Regularized logistic regression
-from Implementation import regu_logistic_regression_gd
-
-# init parameters
-max_iter = 1600
-gamma = 0.00001
-#gamma = 0.00000009
-lambda_ = 0.1
-norm_tX = np.c_[np.ones((y.shape[0], 1)), norm_tX]
-
-
-initial_w = np.zeros((norm_tX.shape[1], 1))
-
-
-weights, loss_rlr = regu_logistic_regression_gd(y, norm_tX, lambda_, initial_w, max_iter, gamma )
-
 ### Ridge regression with a polynome 7 degree
 
 from Implementation import split_data, build_poly, ridge_regression, compute_mse
@@ -73,7 +43,7 @@ def ridge_regression_split(x, y):
     degree = 7
     seed = 29
     ratio = 0.8
-    lambda_ = 0.1
+    lambda_ = 0.0001
      
     # split data
     x_tr, x_te, y_tr, y_te = split_data(x, y, ratio, seed)
@@ -100,16 +70,7 @@ def ridge_regression_split(x, y):
 
 
 
-weights = ridge_regression_split(norm_tX, y)
-
-
-### Split data Log Res
-
-from Implementation import train_test_split_demo_lr
-seed = 6
-degrees = [7]
-split_ratio = 0.8
-weights = train_test_split_demo_lr(norm_tX, y, split_ratio, seed)
+weights, loss_rmse = ridge_regression_split(norm_tX, y)
 
 
 ### Generate predictions and save ouput in csv format for submission:
