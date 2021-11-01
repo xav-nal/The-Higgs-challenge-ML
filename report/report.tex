@@ -44,7 +44,9 @@ We add a feature of constant nonzero value to create a homogenous coordinate sys
 
 As mentioned before, we remove the 22nd feature, and add 4 boolean features that encode each of its discrete values.
 \section{Algorithm selection}
+We explored two algorithms: logistic regression, and ridge regression with polynomial feature extension. We split our training dataset into a test dataset proper (80\%) and validation dataset (20\%) to tune hyperparameters.
 \section{Results}
+Our best performing algorithm both on the validation dataset and in the competition was ridge regression with $lambda = 10^{-4}$ and polynomial expansion up to degree 7.
 \section{Conclusion}
 
 \begin{figure}
