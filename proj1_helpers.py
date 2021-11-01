@@ -95,18 +95,3 @@ def sample_data(y, x, seed, size_samples):
     y = y[random_permuted_indices]
     x = x[random_permuted_indices]
     return y[:size_samples], x[:size_samples]
-
-def standardize(x):
-    """Standardize the original data set."""
-    mean_x = np.mean(x, axis=0)
-    x = x - mean_x
-    std_x = np.std(x, axis=0)
-    x = x / std_x
-    return x, mean_x, std_x
-            
-        
-def de_standardize(x, mean_x, std_x):
-    """Reverse the procedure of standardization."""
-    x = x * std_x
-    x = x + mean_x
-    return x
