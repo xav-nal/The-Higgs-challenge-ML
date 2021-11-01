@@ -6,6 +6,7 @@ import numpy as np
 
 def build_poly(x, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    #print(np.shape(x))
     poly = np.ones((len(x), 1))
     for deg in range(1, degree+1):
         poly = np.c_[poly, np.power(x, deg)]
@@ -73,6 +74,9 @@ def train_test_split_demo_lr(x, y, ratio, seed):
     gamma = 0.00000009
     initial_w = np.zeros((tx_tr.shape[1], 1))
     
+    print(np.shape(y_tr))
+    print(np.shape(tx_tr))
+    print(np.shape(initial_w))
     
     weight = logistic_regression_gd(y_tr, tx_tr, initial_w, max_iter, gamma)
     
@@ -123,6 +127,12 @@ def calculate_loss(y, tx, w):
     loss = 0
     loss = y.T.dot(np.log(y_pred)) + (1 - y).T.dot(np.log(1 - y_pred))
     
+    #for x_i, y_i in zip(tx, y):
+     #   xw = x_i @ w
+      #  l = np.log(1 + np.exp(xw))
+       # loss += (l - y_i * xw)
+    
+    #print(loss)
     return np.squeeze(-loss)
     
 
@@ -131,7 +141,10 @@ def calculate_gradient(y, tx, w):
  
     y_pred = sigmoid(tx.dot(w))
     
+    #print(pred)
+    
     grad = tx.T.dot(y_pred - y)
+    #print('le gradient')
     
     return grad
 
@@ -140,6 +153,7 @@ def compute_gradient_LR(y, tx, w):
     err = y - tx.dot(w)
     
     grad = -tx.T.dot(err) / len(err)
+    #print(err.shape, grad.shape, y.shape, tx.shape, w.shape)
     return grad, err
 
 def compute_stoch_gradient(y, tx, w):
@@ -157,6 +171,7 @@ def learning_by_gd(y, tx, w, gamma):
     loss = calculate_loss(y, tx, w)
     #grad = calculate_gradient(y, tx, w)
     grad = compute_stoch_gradient(y, tx, w)
+    #print(grad)
     w -= gamma * grad
     return loss, w
 #-----------------------------------------
@@ -169,6 +184,7 @@ def learning_by_penalized_gd(y, tx, w, gamma, lambda_):
     Return the loss and updated w.
     """
     loss = calculate_loss(y, tx, w) + lambda_ * np.squeeze(w.T.dot(w))
+    #print(loss)
     gradient = calculate_gradient(y, tx, w) + 2 * lambda_ * w
     #loss, gradient = penalized_lr(y, tx, w, lambda_)
     w -= gamma * gradient
