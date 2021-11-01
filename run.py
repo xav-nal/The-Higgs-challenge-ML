@@ -34,7 +34,7 @@ y = np.delete(y, outliers_mask, axis=0)
 
 ### Ridge regression with a polynome 7 degree
 
-from Implementation import split_data, build_poly, ridge_regression, compute_mse
+from implementations import split_data, build_poly, ridge_regression, compute_mse
 
 def ridge_regression_split(x, y):
     """ridge regression demo."""
