@@ -40,22 +40,9 @@ def compute_log_likelihood(y, tx, w):
     pred = np.clip(pred, 1e-15, 1 - 1e-15)
     
     loss = y.T.dot(np.log(pred)) + (1 - y).T.dot(np.log(1 - pred))
-    # print("loss: ",loss)
-    # loss = np.sum(np.where(xw > 23, xw, np.log(1 + np.exp(xw))) - y * xw)
-    # loss = np.sum(y * np.log(pred) + (1 - y) * np.log(1 - pred))
     
     return loss
     
-
-    
-    # if (np.isnan(pred).sum()):
-    #     print("pred", np.isnan(pred).sum())
-    #     print("Loss",loss)
-        
-    # return np.squeeze(-loss).item() * (1 / N)
-
-
-
 
 
 def update_gamma(gamma,loss):

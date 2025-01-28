@@ -61,7 +61,7 @@ def run_logistic_regression(y, x,
     loss_te = compute_log_likelihood(y_te, tx_te, weight)
 
 
-    print("proportion={p}, max_iters={i}, gamma={g}, Training Loss={tr:.3f}, Testing Loss={te:.3f}".format(
-           p=ratio, i=max_iters, g=gamma, tr=loss_tr, te=loss_te))
+    print("proportion={p}, max_iters={i}, gamma={g:.3f}, Training Loss={tr:.3f}, Testing Loss={te:.3f}".format(
+           p=ratio, i=max_iters, g=gamma, tr=loss_tr.item(), te=loss_te.item()))
     
-    return weight, loss_rmse
+    return weight, loss
